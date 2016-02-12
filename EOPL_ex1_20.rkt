@@ -7,8 +7,8 @@
                                   (if (eqv? element symbol)
                                       1
                                       0)
-                                  (count_occurrences symbol element)))
-           (car s_list))
+                                  (count_occurrences symbol element))
+              )(car s_list))
            (count_occurrences symbol (cdr s_list))))))
 
 
