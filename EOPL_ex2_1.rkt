@@ -1,28 +1,26 @@
 #lang racket
 
-(define bigit_base 10)
-(define bigit_zero 0)
-(define bigit_full (- bigit_base 1))
-(define zero (list bigit_zero bigit_zero bigit_zero bigit_zero bigit_zero
-           bigit_zero bigit_zero bigit_zero bigit_zero bigit_zero
-           bigit_zero bigit_zero bigit_zero bigit_zero bigit_zero
-           bigit_zero bigit_zero bigit_zero bigit_zero bigit_zero))
+(define bigit_upper 10)
+(define bigit_lower 0)
+(define bigit_full (- bigit_upper 1))
+(define zero (list bigit_lower bigit_lower bigit_lower bigit_lower bigit_lower
+                   bigit_lower bigit_lower bigit_lower bigit_lower bigit_lower
+                   bigit_lower bigit_lower bigit_lower bigit_lower bigit_lower
+                   bigit_lower bigit_lower bigit_lower bigit_lower bigit_lower))
 
 (define is_zero?
-  (lambda (n)
-    (equal? n zero)))
+  (lambda (num)
+    (equal? num zero)))
 
 (define bigit_add_1
-  (lambda (n)
-    (cond [(eq? n bigit_full) bigit_zero]
-          [else (+ n 1)]
-          )))
+  (lambda (bigit)
+    (modulo (+ bigit 1) bigit_upper)     
+    ))
 
 (define bigit_sub_1
-  (lambda (n)
-    (cond [(eq? bigit_zero n) bigit_full]
-          [else (- n 1)]
-          )))
+  (lambda (bigit)
+    (modulo (- bigit 1) bigit_upper)
+    ))
 
 (define add_1
   (lambda (bigits)
@@ -30,7 +28,7 @@
                           (newline)
                           '()]
           [else (define result (bigit_add_1 (car bigits)))
-                (cond [(eq?  result bigit_zero) 
+                (cond [(eq?  result bigit_lower) 
                        (cons result 
                              (add_1 (cdr bigits)))]
                       [else (cons result (cdr bigits))] 
@@ -40,8 +38,8 @@
 (define one (add_1 zero))
 
 (define is_one?
-  (lambda (n)
-    (equal? n one)))
+  (lambda (num)
+    (equal? num one)))
 
 (define sub_1
   (lambda (bigits)
@@ -50,25 +48,25 @@
                           '()]
           [else (define result (bigit_sub_1 (car bigits)))
                 (cond [(eq? result bigit_full) (cons result
-                                             (sub_1 (cdr bigits)))]
+                                                     (sub_1 (cdr bigits)))]
                       [else (cons result (cdr bigits))]
                       )]
           )))
 
 (define add
-  (lambda (sum n)
-    (cond [(is_zero? n) sum]
-        [else (add_1 (add sum 
-                  (sub_1 n)))]
-      )))
+  (lambda (sum num)
+    (cond [(is_zero? num) sum]
+          [else (add_1 (add sum 
+                            (sub_1 num)))]
+          )))
 
 (define mul
   (lambda (num times)
     (cond [(is_zero? times) zero]
           [(is_one? times) num]
           [else (add num 
-                (mul num (sub_1 times)))]
-      )))
+                     (mul num (sub_1 times)))]
+          )))
 
 
 (define factorial
@@ -76,13 +74,13 @@
     (cond [(is_zero? num) (add_1 num)]
           [(is_one? num) num]
           [else (mul num (factorial (sub_1 num)))]
-      )))
+          )))
 
-(factorial '(10 0 0 0 0
-       0 0 0 0 0
-       0 0 0 0 0
-       0 0 0 0 0))
- 
+(factorial '(7 0 0 0 0
+               0 0 0 0 0
+               0 0 0 0 0
+               0 0 0 0 0))
+
 ;;定義element時可以架在未來的element上
 
 
@@ -102,7 +100,7 @@
 ;;element function其實就是廣義的data structrue, 
 ;;(data structrue belong element function)
 ;;所以寫程式是先寫data structure再寫上去,
-;;所以寫程式是先寫elements, then base on this elements to approch problem
+;;所以寫程式是先寫elements, then base on these elements to approch problem
 
 ;;因為遞迴說穿了就是top base on elements,
 ;;只要element是elemantarist和simpliest,
