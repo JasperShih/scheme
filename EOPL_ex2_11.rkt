@@ -9,7 +9,7 @@
 (define atom?
   (lambda (x)
     (and (not (pair? x))
-    	 (not (null? x))
+         (not (null? x))
          )
     ))
 
@@ -25,8 +25,8 @@
 (define extend
   (lambda (var val env)
     (list (list (list var) 
-    	        (list val)) 
-    	  env)))
+                (list val)) 
+          env)))
 
 ;;multi_extend(Lst Lst Env) > Env
 (define multi_extend
@@ -35,42 +35,42 @@
 
 ;;lookup(var Env) > val
 (define lookup
-	(lambda (search_var env)
-		{cond 
-			[(empty_env? env) "Not found"]
-			[else (define saved_vars (first (first env)))
-				  (define saved_vals (second (first env)))
-				  (define saved_env (second env))
-				  ;;match_vars(Lst Lst) > val
-				  (define match_vars
-				  	(lambda (saved_vars saved_vals)
-				  		{cond 
-				  			[(null? saved_vars) (lookup search_var saved_env)]
-				  			[(eq? (first saved_vars) search_var) (first saved_vals)]
-				  			[else (match_vars (cdr saved_vars) (cdr saved_vals))]
-				  			}))
-				  (match_vars saved_vars saved_vals)
-				  ]}
-		))
+  (lambda (search_var env)
+    {cond 
+      [(empty_env? env) "Not found"]
+      [else (define saved_vars (first (first env)))
+            (define saved_vals (second (first env)))
+            (define saved_env (second env))
+            ;;match_vars(Lst Lst) > val
+            (define match_vars
+              (lambda (saved_vars saved_vals)
+                {cond 
+                  [(null? saved_vars) (lookup search_var saved_env)]
+                  [(eq? (first saved_vars) search_var) (first saved_vals)]
+                  [else (match_vars (cdr saved_vars) (cdr saved_vals))]
+                  }))
+            (match_vars saved_vars saved_vals)
+            ]}
+    ))
 
 ;;has_binding?(var Env) > Boolean
 (define has_binding?
-	(lambda (search_var env)
-		(cond 
-			[(empty_env? env) #f]
-			[else (define saved_vars (first (first env)))
-				  (define saved_vals (second (first env)))
-				  (define saved_env (second env))
-				  ;;match_vars(Lst Lst) > Boolean
-				  (define match_vars
-				  	(lambda (saved_vars saved_vals)
-				  		{cond 
-				  			[(null? saved_vars) (has_binding? search_var saved_env)]
-				  			[else (or 
-				  					(eq? (first saved_vars) search_var)
-				  				 	(match_vars (cdr saved_vars) (cdr saved_vals)))]}))
-				  (match_vars saved_vars saved_vals)]
-			)))
+  (lambda (search_var env)
+    (cond 
+      [(empty_env? env) #f]
+      [else (define saved_vars (first (first env)))
+            (define saved_vals (second (first env)))
+            (define saved_env (second env))
+            ;;match_vars(Lst Lst) > Boolean
+            (define match_vars
+              (lambda (saved_vars saved_vals)
+                {cond 
+                  [(null? saved_vars) (has_binding? search_var saved_env)]
+                  [else (or 
+                         (eq? (first saved_vars) search_var)
+                         (match_vars (cdr saved_vars) (cdr saved_vals)))]}))
+            (match_vars saved_vars saved_vals)]
+      )))
 
 ;;has_binding會這麼複雜, 我認為是設計錯誤造成的
 ;;有atom save_vars,又有list save_vars
