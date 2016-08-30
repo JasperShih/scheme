@@ -56,26 +56,14 @@
 ;;has_binding?(var Env) > Boolean
 (define has_binding?
   (lambda (search_var env)
-    (cond 
-      [(empty_env? env) #f]
-      [else (define saved_vars (first (first env)))
-            (define saved_vals (second (first env)))
-            (define saved_env (second env))
-            ;;match_vars(Lst Lst) > Boolean
-            (define match_vars
-              (lambda (saved_vars saved_vals)
-                {cond 
-                  [(null? saved_vars) (has_binding? search_var saved_env)]
-                  [else (or 
-                         (eq? (first saved_vars) search_var)
-                         (match_vars (cdr saved_vars) (cdr saved_vals)))]}))
-            (match_vars saved_vars saved_vals)]
-      )))
+    [define result (lookup search_var env)]
+    (not (eq? result "Not found"))
+    ))
 
-;;has_binding會這麼複雜, 我認為是設計錯誤造成的
+;;第一版的lookup會這麼複雜, 我認為是設計錯誤造成的
 ;;有atom save_vars,又有list save_vars
-;;is should be ((vars vals) Env)
+;;it should be ((vars vals) Env)
 
 ;;正常寫出來的單元程式, 縮進套嵌應該不會太深, 層次架構應不至於太複雜,
 ;;如果不是這樣, 很有可能是程式設計錯誤了, 如同這個例子一樣.
-(has_binding? 'g (multi_extend '(a b c) '(10 11 12) (extend 'e 20 (extend 'd 15 empty))))
+(has_binding? 'f (multi_extend '(a b c) '(10 11 12) (extend 'e 20 (extend 'd 15 empty))))
