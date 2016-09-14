@@ -1,12 +1,33 @@
 #lang racket
 ;; Copyright (c) 2016 Copyright Holder All Rights Reserved.
-; @ iterative data scaling (object oriented programming)
+
+;iterative data scaling 很可能不等於OOP
+;前面的理解可能有誤
+;
+;有必要再abstract就好, 沒必要的abstract只會使程式變爛.
+;procedural representation是因為其env內部有一search function,
+;這層abstract是合理的.
+;
+;而has?的抽象做的事情跟has?一樣, 做的是無效抽象
+;
+;我想我寫的recursive data scaling是合適且簡單的,
+;而iterative data scaling很可能是冗贅的或非必要的,
+;OOP很可能跟這些是獨立的.
+
+;很可能變成OOP的原因不是因為要先收集data,
+;而是因為這function要保存多樣東西,
+;這些東西可以取出 更改
+;然後根據參數可以選擇一項傳回(這樣的function就很像object)
+
+;我覺得也可以不用OOP寫法, 回傳(list bag search(bag)), (first env)取東西即可
+
+; @ iterative data scaling
 ; @ recursive data scaling
 ;
-; I think object oriented programming style (iterative data scaling) differ
+; I think iterative data scaling differ
 ; from recursive programming style in the way, how to deal its data scale.
-; When we got a lots of scattered data, OOP collects them first, and manipulate
-; the collected data by manipulated function finally, to get return value.
+; When we got a lots of scattered data, iterative scale method collects them first,
+; and manipulate the collected data by manipulated function finally, to get return value.
 ;
 ; In another way, recursive data scaling manipulate local data and
 ; get local return value when encounter a lots of data.
@@ -70,4 +91,4 @@
               bag
               search_at_bag}))))
 
-(((extend 'b 11 ((extend 'a 10 (empty bag)) bag)) search_at_bag) 'c)
+(((extend 'b 11 ((extend 'a 10 (empty bag)) bag)) search_at_bag) 'a)
