@@ -24,35 +24,49 @@
 ;;優缺:
 ;;功力太淺還不知誰好誰壞, 我這種是比較直觀也比較貼近大自然的的想法,
 ;;石頭和其他資源原來就有, 並不是我創造出來的, 我把它加工成石刀或者石斧.
-;;而作者的哲學顯然就不是這樣, 但作者把所有東西都收縮到funtion上, 
+;;而作者的哲學顯然就不是這樣, 但作者把所有東西都收縮到funtion上,
 ;;有function就能產生萬物, 或許這樣對於程式的構築是有便利性的, 很簡易,
 ;;或許我這種方法在一開始構築的primitive就會很龐大?
 
 ;;作者將函數分成constructor和observer.
 
+;;iterative data scaling & external selector object
+;;也許所謂的object就只是一個function, 裡面保存了許多value, 並且可根據selector選擇
+;;要回傳哪一個value from values.
+;;object的selector寫在object外面的寫法
 
-;;my style)
-;;Stack: empty|(push Stack)|(pop Stack)
+;這裡實現方法一點也不simple, top可以完全不是函式, 只是直接return item就好
+;stack可以是item加上forwrad stack.
 
-;;data structure: empty
-;;constructed functions: push, pop
-;;observed functions: top, empty?
+(define top car)
 
-;;empty: Stack
+;Stack: empty| (push Stack)| (pop stack)
 (define empty
-	(lambda ()
-		"Nothing here"))
+  (lambda ()
+    [define bag '()]
+    {list
+      bag
+      (lambda () (top bag))}))
 
-;;top(Stack) > stuff
-(define top
-	(lambda (stack)
-		(stack)))
+(define get_bag
+  (lambda (stack)
+    (first (stack))))
 
-(top empty)
+(define get_top
+  (lambda (stack)
+    ((second (stack)))))
 
-top(Stack) > stuff
-(define top
-	(lambda (stack)))
+(define empty_stack?
+  (lambda (stack)
+    [define bag (get_bag stack)]
+    (eq? bag null)))
 
-(define empty
-	(top))
+(define push
+  (lambda (item stack)
+    [define bag (cons item (get_bag stack))]
+    (lambda ()
+      {list
+        bag
+        (lambda () (top bag))})))
+
+(empty_stack? (push 'a empty))
