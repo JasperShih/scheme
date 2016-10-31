@@ -1,0 +1,196 @@
+-----------------------------Good Words------------------------------
+選擇與選項
+(opt options)
+
+Cell
+
+Current forward
+
+Last next
+
+Pick
+
+Piece
+
+表達空的概念:
+  (是否為空?, val)
+empty:(#t)
+non-empty:(#f #t)
+其實就是用不同bits數來表達, 解決空的問題. (缺點: 這樣表達效率會變慢)
+一個bit表達是否為空, 另一個bit表達實際內容, 這樣空與不空肯定不會與內容混淆重覆.
+
+search_var var val
+
+([car_search env] search_var)
+([car_empty_env? env])
+
+Stuff
+
+Build_function
+
+Element makes elegance
+
+
+------------------------------------------
+可讀性>模組化
+
+可讀性衡量標準
+好:易懂, 程式碼符合我們心理的期望行為
+
+無關:
+
+壞:代碼不直觀(要繞幾個彎, 即使這是為了更加模組化而寫成這樣)會造成理解開銷, 程式塗改困難
+
+
+(let ([x 4] [y 5])
+  (case (+ x y)
+    [(1 3 5 7 9) 'odd]
+    [(0 2 4 6 8) 'even]
+    [else 'out-of-range]))
+
+(require racket/trace)
+(define (f x) (if (zero? x) 0 (add1 (f (sub1 x)))))
+(trace f)
+(f 10)
+
+(define my-list
+  (lambda x 	;引數是list, 加括號後變成一一對應的引數.
+    x))
+(my-list 'a 'b 'c)
+> '(a b c)
+
+;感覺就是迴圈
+(let cool {[a 1]}
+  (display a)
+  {cond
+    ((eq? a 10) a)
+    (else (cool (+ a 1)))})
+> 1234567891010
+
+;Should follow this format
+(define mul
+  (lambda (x y)
+    {cond
+      [(number? x)
+       {cond
+         [(number? y) (* x y)]
+         [(matrix? y) (mat-sca-mul y x)]
+         [else (type-error y)]}]
+      [(matrix? x)
+       {cond
+         [(number? y) (mat-sca-mul x y)]
+         [(matrix? y) (mat-mat-mul x y)]
+         [else (type-error y)]}]
+      [else (type-error x)]}))
+
+;程式碼應該先橫再直, 有更高的可讀性.
+(let* {[a 10] [b a] [c b]}
+  100)
+
+(let* {[a 10]
+       [b a]
+       [c b]}
+  100)
+
+Let uasage:
+;引數proc應放在最下面的return function,我認為比放在make-engine好,
+;有更高的內聚,更atomic.
+(define make-engine
+  (lambda (proc)
+    [define do-complete #f] [define do-expire #f]
+    (let {[timer-handler
+            (lambda ()
+              (start-timer (call/cc do-expire) timer-handler))]
+          [new-engine
+            (lambda (resume)
+              (lambda (ticks complete expire)
+                ((call/cc
+                   (lambda (escape)
+                     (set! do-complete
+                       (lambda (ticks value)
+                         (escape (lambda () (complete ticks value)))))
+                     (set! do-expire
+                       (lambda (resume)
+                         (escape (lambda ()
+                                   (expire (new-engine resume))))))
+                     (resume ticks))))))]}
+      (new-engine
+        (lambda (ticks)
+          (start-timer ticks timer-handler)
+          (let ([value (proc)])
+            (let ([ticks (stop-timer)])
+              (do-complete ticks value))))))))
+;a0:a3|a1 a2
+;禁止跨層抽象
+
+;follow below usage of let
+;let有兩層抽象:
+;一層是{...}裡面,這裡放trivial definitions;
+;另一層是(begin ...)裡面放main definitions,以[define ...]定義;
+;下一層抽象使用下一個(let ...)表達.
+
+;trivial definitions的分辨方法:
+;如我們會說a1 a2 compose a3,
+;但不會說{[do-complete #f] [do-expire #f]} compose a2.
+(define make-engine ;a0
+  (let {}
+    [define timer-handler ;a1
+      (let {[do-expire #f]}
+        (lambda ()
+          (start-timer (call/cc do-expire) timer-handler)))]
+    [define new-engine ;a2
+      (let {[do-complete #f] [do-expire #f]}
+        (lambda (resume)
+          (lambda (ticks complete expire)
+            ((call/cc
+               (lambda (escape)
+                 (set! do-complete
+                   (lambda (ticks value)
+                     (escape (lambda () (complete ticks value)))))
+                 (set! do-expire
+                   (lambda (resume)
+                     (escape (lambda ()
+                               (expire (new-engine resume))))))
+                 (resume ticks)))))))]
+    [let {[do-complete #f] [do-expire #f]}
+      (lambda (proc) ;a3
+        (new-engine
+          (lambda (ticks)
+            (start-timer ticks timer-handler)
+            (let ([value (proc)])
+              (let ([ticks (stop-timer)])
+                (do-complete ticks value))))))]))
+
+
+(define var0
+  (lambda (var1 ... varn)
+    e1 e2 ...))
+=
+(define (var0 var1 ... varn)
+  e1 e2 ...)
+
+(define var0
+  (lambda varr
+    e1 e2 ...))
+=
+(define (var0 . varr)
+  e1 e2 ...)
+
+(define var0
+  (lambda (var1 ... varn . varr)
+    e1 e2 ...))
+=
+(define (var0 var1 ... varn . varr)
+  e1 e2 ...)
+
+
+(define make-stack
+  (lambda ()
+    (let ([ls '()])
+      (lambda (msg . args) ;attention
+        (case msg
+          [(empty? mt?) (null? ls)]
+          [(push!) (set! ls (cons (car args) ls))]
+          [(top) (car ls)]
+          [(pop!) (set! ls (cdr ls))]
+          [else "oops"])))))
