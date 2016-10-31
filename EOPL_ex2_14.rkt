@@ -1,6 +1,4 @@
 #lang racket
-;從抽象角度來看,把search等提出合併成一個是否好?
-
 ;a0:a4|a1 a2 (a3|a1) ->
 ;a0:a4|a1 a2 a3|a1
 (define empty-env ;a0
