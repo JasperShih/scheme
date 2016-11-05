@@ -194,3 +194,12 @@ Let uasage:
           [(top) (car ls)]
           [(pop!) (set! ls (cdr ls))]
           [else "oops"])))))
+
+for a data structure,
+it should be consider 5 functions:
+1) car: show
+2) cdr!: forward data structure
+3) anti-cdr!: resume cdr
+4) cons!: add
+5) anti-cons!: delete
+set! means remain same the type after call the function
