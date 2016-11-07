@@ -50,3 +50,23 @@
     (parser (car with-parentheses))))
 
 (display (concrete->abstract '(- - 3 2 - 4 - 12 7)))
+
+;--------------------------------------
+;抽取一個有用的資訊, 和餘下其他未處理字符串
+;(extract chaos-data)
+;return (a-known , residual-chaos-data)
+(define extract
+  (lambda (chaos-data)
+    {cond
+      [(null? chaos-data) '(empty ())]
+      [else [define stuff (car chaos-data)]
+            {cond
+              [(number? stuff) (list (list 'const-exp stuff) (cdr chaos-data))]
+              [else [define next-extract (extract (cdr chaos-data))]
+                    [define next-2-extract (extract (second next-extract))]
+                    (list
+                      (list 'diff-exp (car next-extract) (car next-2-extract))
+                      (second next-2-extract))]}]}))
+
+
+(display (extract '(- - 3 2 - 4 - 12 7)))
