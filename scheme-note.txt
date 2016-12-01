@@ -1,4 +1,4 @@
------------------------------Good Words------------------------------
+﻿-----------------------------Good Words------------------------------
 選擇與選項
 (opt options)
 
@@ -11,6 +11,8 @@ Last next
 Pick
 
 Piece
+
+first, lead
 
 表達空的概念:
   (是否為空?, val)
@@ -203,3 +205,19 @@ it should be consider 5 functions:
 4) cons!: add
 5) anti-cons!: delete
 set! means remain same the type after call the function
+
+這些operations是相對於資料結構而言, 對list資料結構就是car, cdr cons,
+其他的資料結構有其他的operations.
+
+----------------------------------------------------------------------
+(define all-true?
+  (lambda (lead . args)
+    (if lead
+        (if (null? args)
+            lead
+            (apply all-true? args))
+        #f)))
+
+(lead . args)搭配apply就可以遞迴
+
+--------------------------------------------
