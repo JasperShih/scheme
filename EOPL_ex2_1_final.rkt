@@ -34,11 +34,13 @@
      [mul num 
           (factorial (sub_1 num))])
 
+(define aaa (lambda (num gg kk)
 num consult:{
 	zero one > one
 	two > two
 	> (self: num - 1) * num
 }
+))
 
 (self: num -= 1, gg = 78) 
 

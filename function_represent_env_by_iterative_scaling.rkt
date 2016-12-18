@@ -49,6 +49,8 @@
 ;     ; 2)if step 1 is desired return value, procedual terminal.
 ;     ;   otherwise, manipulate next local data.
 
+
+;;object的selector寫在object裡面的寫法
 ;; --------------------------code--------------------------------
 ;; bag representation:
 ;; ((var_1 val_1) (var_2 val_2) ...).

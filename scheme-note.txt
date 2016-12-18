@@ -1,4 +1,6 @@
-﻿-----------------------------Good Words------------------------------
+﻿;命名時重要要表達的意思，最主要的意思要放前面，輔助說明的放後面
+;function的args排序也是一樣
+-----------------------------Good Words------------------------------
 選擇與選項
 (opt options)
 
@@ -198,16 +200,19 @@ Let uasage:
           [else "oops"])))))
 
 for a data structure,
-it should be consider 5 functions:
+it should be consider 6 functions:
 1) car: show
 2) cdr!: forward data structure
 3) anti-cdr!: resume cdr
-4) cons!: add
-5) anti-cons!: delete
+4) null?: reach data structrue tail, cannot forward anymore
+5) cons!: add
+6) anti-cons!: delete
 set! means remain same the type after call the function
 
-這些operations是相對於資料結構而言, 對list資料結構就是car, cdr cons,
+這些operations是相對於資料結構而言, 對list資料結構就是car, cdr, cons,
 其他的資料結構有其他的operations.
+
+或許list的cdr混合了資料結構的步進與刪除兩種概念是錯誤的, 應該分開來.
 
 ----------------------------------------------------------------------
 (define all-true?
@@ -221,3 +226,108 @@ set! means remain same the type after call the function
 (lead . args)搭配apply就可以遞迴
 
 --------------------------------------------
+do loop:
+(define total
+  (lambda (arg)
+    (do ([num arg (- num 1)] [sum 0 (+ sum num)]);多個變數[名稱 起始值 to-be-the-value-in-next-step]
+      [(zero? num) sum])));中斷條件
+(total 10)
+>55
+
+-------------------------------------------
+(vector 92 77 67)和#(92 77 67)是不一樣的,
+前者mutable, 後者immutable.
+
+--------------------------------------------------------------------------------------------------
+;在寫vector操作時，總是從vec前面向vec尾端進行, 總是有now tail變數, 需要另外的功能再另外加變數, 不要改變now tail的原始意義.
+;now: 代表vec資料結構的一個步進, 和list的cdr有點像.
+;tail: vec的邊界,用來判斷一個entire vec操作的task是否結束了. 和list的'()有點像
+;(其實vec的ref像list的car; 而vec是不能更改data structure長度的所以沒有cons,
+;而有一個不太一樣的功能set-vec!來update資料)
+;嚴格說vec是不能新增和刪除data的, 而只能update state, 我們只是透過now tail來指定vec線段, 來表達資料的新增與刪除.
+;
+;car: ref
+;cdr: now
+;'(): tail
+;cons: (+/- now/tail), set-vec!
+;
+;在一開始寫vec操作function時先不要去思考vec邊界判斷應該要-1或+1, 就是多做一次或少做一次的效率事情,
+;如idx變成idx+1/idx-1, 這將失去了簡潔一致性, 直接寫該變數就好, 即使多做一次, 要先把程式寫出來, 需要優化再優化,
+;這樣往往最後寫出來的程式邊界條件真的是不用加減一的, 也許這才是function正確的atom風貌, 一開始考慮+/-1把function複雜了.
+;
+;(define selection-sort ;最外面的arg都只傳vec就好(程式不需要指定線段的話), 再以let定義所需變數, args太長可讀性很差.
+;  (lambda (vec)
+;    (letrec {[tail (last-idx vec)] [first-unsorted 0] [smallest first-unsorted]} ;這裡設置不變或比較少改變的變數
+;      [define help
+;        (lambda (now) ;我們需要now變數, 但now會不斷改變所以我們把它設在arg裡, 而不設在上面
+;          {cond
+;            [(>= first-unsorted tail) vec]
+;            [(eq? now (+ tail 1)) (swap-vec! first-unsorted smallest vec)
+;                                   (set! first-unsorted (+ first-unsorted 1))
+;                                   (set! smallest first-unsorted)
+;                                   (help (+ smallest 1))]
+;            [else {cond [(vec<vec? now smallest vec vec) (set! smallest now)]}
+;                  (help (+ now 1))]})]
+;      (help (+ smallest 1)))))
+
+以下可能才是更好的理解:
+0) null?: tail?
+1) car: ref (show
+2) cdr!: now+1 (forward data structure
+3) anti-cdr!: now-1 (resume cdr
+4) cons!: set-vec!, tail(add
+5) anti-cons!: set-vec!, tail(delete
+(其實4 5, vec是無法實現的)
+
+我認為vec操作比list複雜, 是因為我們不能直接針對我們想要的語意進行操作,
+而要透過索引間接進行操作, 我覺得vec操作應該是可以完全把索引隱藏起來的,
+像是在操作list那樣, 試著去實作看看.
+
+[(null? vec) 'end] ; better name:tail-vec?
+[(eq? (car vec) )]
+
+可能性的實作方法:
+1)val-vec: 每次都直接把下一個值取出來, 就當成直接對值操作
+2)[now tail vec]: (0 5 vec) > (1 5 vec) > (2 5 vec) >... : 建立一種新的data type nvec, 抽象在vec上而隱去了索引.
+  可進行像(null? nvec), (car nvec), (set-val! nvec val), ([inclusive/exclusive]-prior/later nvec);qsort nvec pivot往兩邊砍斷
+  (next-forward nvec), (back-forward nvec), (first-forward nvec), (last-forward nvec)
+  (up-forward nvec), (down-forward nvec), (jump-forward 5 nvec);其實這api可能不好應儘量規避索引操作.
+  forward就是步進的意思, 像list的cdr;
+  基本提供next-forward(x+1 y vec)和back-forward(x-1 y vec)就好,
+  讓forward接口開放, 可針對問題題目再客製化臨時寫出所需的特殊forward, 但相信需要特殊forward的情況很少.
+
+如果說這種對vec抽象的new data type nvec會造成效率的些微下降(每次都要解析(0 5 vec)),
+我覺得compiler技術應該是可以自動轉換nvec function> vec function.
+
+其實我覺得我也可以設計出一種更好的list
+
+--------------------------------------------------------------
+從text頭往text尾, 試著找出str字串. (這裡程式風格應該照上面, 這個例子僅要說明組合概念而已)
+
+(define match-str
+  (lambda (text-now text-tail str-now str-tail text str)
+    {cond
+      [(> str-now str-tail) {list #t text-now}]
+      [(> text-now text-tail) {list #f}]
+      [(vec-eq-vec? text-now str-now text str)
+       (match-str (+ text-now 1) text-tail (+ str-now 1) str-tail text str)]
+      [else (match-str (+ text-now 1) text-tail str-now str-tail text str)]}))
+
+(define text (vector 'a 'b 'a 'b 'c 'g))
+(define str (vector 'a 'b))
+(match-str 0 (last-idx text) (last-idx str) 0 text str)
+
+讓該function變得也可以從text尾往text頭找出str可不可以呢? 可以, 但開始要用絕對值了
+(或讓原本idx map to [vec.len -idx] 可能是更好的做法), 所以先不做了.
+若直接將此function改成正序和反序通用的function, 很可能會使此function的複雜度激增
+使得此function開始幾乎不可讀而難以維護了.
+相反的我可以做寫出一個反序的function, 再和這個正序的function組合, 這樣程式依然保有可讀性也易維護.
+從別的角度來看, 正反序通用的function並不夠atomic, 正序function或反序function才是atom.
+
+也許要新增功能時, 從來都不應該去考慮直接改舊有的code、改造原有function使它多幾個features,
+而應該考慮為這幾個features個別寫出幾個atom functions, 再將這些atom functions和原本function組合而達成需求,
+這樣一來不用改動原本已經寫好的function, 而又能保持每個function都是atom, 高可讀又易於維護,
+而當別的模組需要某個atom function的話, 也能直接提供出去.
+atom、recursive、composite這幾個概念加在一起, 力量非常巨大.
+
+Kent的compiler課程的naro passes或許也是基於類似的concept
