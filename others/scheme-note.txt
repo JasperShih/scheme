@@ -1,5 +1,17 @@
 ﻿;命名時重要要表達的意思，最主要的意思要放前面，輔助說明的放後面
 ;function的args排序也是一樣
+
+我覺得變數命名需要一眼就知道他的資料型態
+occurs_hash
+而像idx of arr, 就應該直接綁定該arr變數名
+idx_vec in
+for (int idx_vec = 0; idx_vec < vec.size(); idx_vec++)
+
+直接綁定該hash變數名
+iter_occurs in
+for (std::unordered_map<int,int>::iterator iter_occurs = occurs_hash.begin();
+     iter_occurs != occurs_hash.end();
+     ++iter_occurs )
 -----------------------------Good Words------------------------------
 選擇與選項
 (opt options)
@@ -297,7 +309,7 @@ do loop:
   讓forward接口開放, 可針對問題題目再客製化臨時寫出所需的特殊forward, 但相信需要特殊forward的情況很少.
 
 如果說這種對vec抽象的new data type nvec會造成效率的些微下降(每次都要解析(0 5 vec)),
-我覺得compiler技術應該是可以自動轉換nvec function> vec function.
+我覺得compiler技術應該是可以自動轉換nvec function> vec function. (或者透過macro轉換)
 
 其實我覺得我也可以設計出一種更好的list
 
@@ -331,3 +343,11 @@ do loop:
 atom、recursive、composite這幾個概念加在一起, 力量非常巨大.
 
 Kent的compiler課程的naro passes或許也是基於類似的concept
+
+----------------------------------------------------------
+或許可以參考
+tmp.protocol    = ip->ip_p;
+tmp.ip_src      = ip->ip_src;
+tmp.ip_dst      = ip->ip_dst;
+tmp.num_of_pkts = 1;
+空格對齊會有更高的可讀性.

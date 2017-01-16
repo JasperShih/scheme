@@ -22,7 +22,7 @@
 --------------------------------------------------------------------
 在數學中有很多定理能保證函數在一定的條件下必定有一個或更多的不動點.
 不是每一個函數都具有不動點。
-吸引不動點:不是所有不動點都是吸引的.
+吸引不動點:不是所有不動點都是吸引的(就是一直代入現在的點,則會一直往不動點approach).
 
 f(x) > x, we say x is fixed point of f.
 But f(x) > x1 or f(x) > x2, we would not say x is fixed point of f.
@@ -49,7 +49,7 @@ function是一種value, function就只是一種value type,
 2: run all the time, never stop.
 
 所以其實每一次的function call, 我們都不能知道是否會陷入這種死循環.
-我們寫的function, 應該是要讓所有形式種類的輸入, 都回return value, 而不會陷入死循環.
+我們寫的function, 應該是要讓所有形式種類的輸入, 都會return value, 而不會陷入死循環.
 
 --------------------------------------------
 遞迴的基本寫法大致上應該長這樣:
