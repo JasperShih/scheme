@@ -119,8 +119,10 @@
             [exp-quotient (exp1 exp2) (val-num (quotient (LangNum->SchemeNum (value-of exp1 env))
                                                          (LangNum->SchemeNum (value-of exp2 env))))]
             ; Expression X Expression -> LangBool
-            [exp-equal? (exp1 exp2) (val-bool (eq? (LangNum->SchemeNum (value-of exp1 env))
-                                                   (LangNum->SchemeNum (value-of exp2 env))))]
+            [exp-equal? (exp1 exp2) (value-of ; another approach
+                                     (exp-zero (exp-const (LangNum->SchemeNum (value-of (exp-diff exp1 exp2)
+                                                                                        env))))
+                                     env)]
             ; Expression X Expression -> LangBool
             [exp-greater? (exp1 exp2) (val-bool (> (LangNum->SchemeNum (value-of exp1 env))
                                                    (LangNum->SchemeNum (value-of exp2 env))))]
@@ -134,5 +136,5 @@
                    (extend-env 'v (val-num 5)
                      (extend-env 'x (val-num 10) empty-env))))
 
-(define str "equal?(10, 10)")
+(define str "equal?(10, 11)")
 (display (run str))
