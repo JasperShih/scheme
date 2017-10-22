@@ -1,0 +1,98 @@
+﻿世界上擁有真知的人太少。
+----------------------------------------------------------------------
+世界是簡單的，
+只是被一群錯誤的人們複雜或錯誤的建模，
+給搞複雜了。
+
+我們在讀前人的著作，
+就是透過前人的建模在理解世界(當然很可能他建模不當，或他對世界的理解是錯的)，
+若覺得很困難，
+那就只是他抽象錯誤罷了，
+不是你不聰明，
+也不是世界原本就是那麼複雜的。
+
+最好的方式，
+就是自己儘量從最原始的簡單世界，
+從新建立新的簡單的正確的抽象，
+之後較複雜的東西，
+都是架在自己的抽象上。
+
+或者至少架在抽象正確的其他人上。
+
+--------------------------------------------------------------------
+在數學中有很多定理能保證函數在一定的條件下必定有一個或更多的不動點.
+不是每一個函數都具有不動點。
+吸引不動點:不是所有不動點都是吸引的(就是一直代入現在的點,則會一直往不動點approach).
+
+f(x) > x, we say x is fixed point of f.
+But f(x) > x1 or f(x) > x2, we would not say x is fixed point of f.
+
+Is it has similarity with fixed point?
+f(value1) > value2,
+f(value3) > g(value4).
+
+although we give value1 to f and it return value2,
+but I think it is very similar with fixed point.
+Because we give a value1 to f and it return a value.
+But we give value3 it return g(value4), not a value.
+
+如果說任何value type(int, double, str, char, vec...)都是Value type的子類,
+那麼上面的式子我們可以改寫成這樣:
+f(Value) > Value,
+f(Value) > g(Value).
+
+這樣就真的和fixed point的定義很像了. 所以我們寫的函式, 就是對fixed point的approach.
+
+function是一種value, function就只是一種value type,
+但我認為(function call)不應該被視為value,因為function call會有兩種情況,
+1: return a value,
+2: run all the time, never stop.
+
+所以其實每一次的function call, 我們都不能知道是否會陷入這種死循環.
+我們寫的function, 應該是要讓所有形式種類的輸入, 都會return value, 而不會陷入死循環.
+
+Expression和Value是不一樣的,
+Evaluate a Expression, we can get a value. (如果不陷入死循環)
+We also can transform a value into Expression. (eg. Const Expression)
+
+我們可以用function來表達Expression. (這樣看來function是不是就是Expression?)
+
+One data type means one kind abstraction.
+Different data types are different kind abstractions.
+--------------------------------------------
+遞迴的基本寫法大致上應該長這樣:
+最大流程終止式寫在最上面(fixed point1)
+次大流程終止式(fixed point2)
+次次大流程終止式(fixed point3)
+...
+fixed point approach1
+fixed point approach2
+...
+
+--------------------------------------------------------------------------------------
+理髮師悖論:
+理髮師给而且只给那些不自己理发的人理发
+
+思路1):假設前提就錯了(建構世界的話並不夠atomic)
+
+思路2):該function接受的type原本就只考慮城裡人,並不考慮理髮師自己的.
+       如今要將該function新添一個feature, 使得該function也能處理理髮師自己這種data type,
+       那就再做出一個新atom function處理理髮師自己(我們假設這function就是理髮師會理自己頭髮),
+       將原本atom function(處理城裡人)和新atom function(處理理髮師)組合成一個新的function.
+
+思路3):假如說整個世界是架構在這句話上,而其實理髮師這樣一個存在並不會使我們建立的整個世界崩潰,這個世界依然還是一個合理世界。
+　　　 首先,我們可以讓理髮師替城鎮的所有不為自己理髮的人理髮(理髮師自己除外),然後再來處理理髮師自己的頭髮.
+       a.當理髮師什麼都不做時, 他屬於不自己理髮的人, 所以理髮師要給(不自己理髮的人)理髮;
+       b.而一旦他要給自己理髮時, 他又變成了自己理髮的人, 這樣會違反了只給(不自己理髮的人)理髮的原則; 所以他又什麼都不能做了, 情況回到了a.
+       雖然有點詭異, 但有沒有發現其實理髮師一直重覆a到b, b到a, a到b...時,其實並沒有違反我們建構世界的那句話, 只是理髮師自己陷入了死循環,
+       世界其他工作行業的人依然該做什麼就做什麼,完全沒有受影響.
+       就只是function(barber) always run and never return. 但又怎樣,其他threads依然運行的好好的,就只是犧牲處理理髮師的那個thread,
+       使整個program依然還是很好的運作.
+       這會不會就是個(function call)不能視為value的問題; 或者說沒有考慮到時間; 或者說沒有考慮到過程(理不理髮不是直接有結果, 而是要有過程才會有結果).
+
+       這時如果我們加入其他一些無傷大雅的輔助條件, 就可以使這世界更加合理的運作, 而又不違反建構世界的那句話.
+       1)理髮師是個熱心的人,一旦有人需要他理髮,他會優先處理別人的問題,再處理自己的問題.
+         這樣就解決了barber自己陷入死循環後, 不自己理髮的人他們的理髮問題.(允許interrupt)
+       2)理髮師也不是整天工作啊, 我們可以設置他整天只工作30分鐘. (這樣理髮師最差情況只要每天自己犧牲30分鐘, 就可以挽救世界崩潰) (time out)
+       3)理髮師將(決定剃頭對象們)和(實際工作)這兩項分開來,每天早上利用3分鐘決定今天所有要理髮的客人們,之後再去理這些客人們(最糟情況理髮師只需要死循環3分鐘)
+         (類似排程制?)
