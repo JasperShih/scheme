@@ -1,17 +1,19 @@
 #lang racket
+     
+;(define
+ ; (powerset lst)
+  ;(cond
+   ; [(empty? lst) '(())]
+    ;[else (opt2
+     ;      (opt (car lst) (power (cdr lst)))
+      ;     (power (cdr lst)))]))
 
+(define res '())
 (define
-  (pwr_sets lst)
+  (pow raw leaf)
   (cond
-    [(empty? lst) '(())]
-    [else (helper (car lst) (pwr_sets (cdr lst)))]))
-
-(define
-  (helper elem lst)
-  (cond
-    [(empty? lst) '()]
-    [else (cons (cons elem (car lst))
-                (cons (car lst)
-                      (helper elem (cdr lst))))]))
-
-(pwr_sets '(1 2 3))
+    [(empty? raw) (set! res (cons leaf res))
+                  res]
+    [else (pow (cdr raw) leaf)
+          (pow (cdr raw) (cons (car raw) leaf))]))
+(pow '(4 5 6 7) '())
